@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
-import { BoardCard, BoardType, StageConfig, BoardFilter, LeadCard, ProjectCard } from '../types';
+import { BoardCard, BoardType, StageConfig, BoardFilter, LeadCard, ProjectCard, EarningsCard } from '../types';
 import { calculateUrgency, formatCurrency } from '../utils';
 import { CardItem } from './CardItem';
 import { InlineAddCard } from './InlineAddCard';
 import { InlineCardDetail } from './InlineCardDetail';
+import { ProjectsTable } from './ProjectsTable';
+import { LeadsTable } from './LeadsTable';
+import { EarningsTable } from './EarningsTable';
+import { Drawer } from './Drawer';
 import { FilterX } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -16,6 +20,7 @@ interface BoardProps {
   onDeleteCard: (cardId: string) => void;
   onAddCard: (card: Omit<BoardCard, 'id' | 'createdAt' | 'updatedAt'>) => void;
   onClearFilters?: () => void;
+  view?: 'table' | 'kanban';
 }
 
 export const Board: React.FC<BoardProps> = ({
@@ -27,9 +32,11 @@ export const Board: React.FC<BoardProps> = ({
   onDeleteCard,
   onAddCard,
   onClearFilters,
+  view = 'kanban',
 }) => {
   const isLead = boardType === 'leads';
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+  const selectedCard = selectedCardId ? cards.find(c => c.id === selectedCardId) : null;
   const [draggedCardId, setDraggedCardId] = useState<string | null>(null);
   const [dragOverStageId, setDragOverStageId] = useState<string | null>(null);
 
@@ -103,7 +110,56 @@ export const Board: React.FC<BoardProps> = ({
     }
   };
 
-  return (
+  const renderTableView = () => {
+    if (boardType === 'projects') {
+      return (
+        <div className="flex flex-col h-full overflow-hidden bg-[oklch(99%_0.005_95)] relative">
+          <UrgencyBanner boardType={boardType} count={urgentCount} onClearFilters={onClearFilters} isFilterActive={filter.urgencyOnly} />
+          <ProjectsTable
+            projects={filteredCards as ProjectCard[]}
+            stages={stages}
+            filter={filter}
+            onUpdateCard={(card) => onUpdateCard(card)}
+            onAddCard={onAddCard}
+            onRowClick={(id) => setSelectedCardId(id)}
+          />
+        </div>
+      );
+    }
+    if (boardType === 'leads') {
+      return (
+        <div className="flex flex-col h-full overflow-hidden bg-[oklch(99%_0.005_95)] relative">
+          <UrgencyBanner boardType={boardType} count={urgentCount} onClearFilters={onClearFilters} isFilterActive={filter.urgencyOnly} />
+          <LeadsTable
+            leads={filteredCards as LeadCard[]}
+            stages={stages}
+            filter={filter}
+            onUpdateCard={(card) => onUpdateCard(card)}
+            onAddCard={onAddCard}
+            onRowClick={(id) => setSelectedCardId(id)}
+          />
+        </div>
+      );
+    }
+    if (boardType === 'earnings') {
+      return (
+        <div className="flex flex-col h-full overflow-hidden bg-[oklch(99%_0.005_95)] relative">
+          <UrgencyBanner boardType={boardType} count={urgentCount} onClearFilters={onClearFilters} isFilterActive={filter.urgencyOnly} />
+          <EarningsTable
+            earnings={filteredCards as EarningsCard[]}
+            stages={stages}
+            filter={filter}
+            onUpdateCard={(card) => onUpdateCard(card)}
+            onAddCard={onAddCard}
+            onRowClick={(id) => setSelectedCardId(id)}
+          />
+        </div>
+      );
+    }
+    return null;
+  };
+
+  const renderKanbanView = () => (
     <div className="flex-1 overflow-x-auto p-6 min-h-[calc(100vh-80px)]">
       <div className="flex items-start gap-6 min-w-max pb-8">
         {stages.map((stage) => {
@@ -184,29 +240,6 @@ export const Board: React.FC<BoardProps> = ({
                         onMoveStage={handleMoveCard}
                         onDragStart={handleDragStart}
                       />
-                      
-                      <AnimatePresence>
-                        {selectedCardId === card.id && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: 0.15, ease: 'easeOut' }}
-                            className="overflow-hidden"
-                          >
-                            <div className="pt-2">
-                              <InlineCardDetail
-                                card={card}
-                                boardType={boardType}
-                                stages={stages}
-                                onClose={() => setSelectedCardId(null)}
-                                onUpdate={onUpdateCard}
-                                onDelete={onDeleteCard}
-                              />
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
                     </div>
                   ))
                 )}
@@ -217,15 +250,15 @@ export const Board: React.FC<BoardProps> = ({
                   stageId={stage.id}
                   stageName={stage.name}
                   boardType={boardType}
-                  onAdd={(stageId, clientName, extraField) => {
+                  onAdd={(stageId, clientName, extraField, currency) => {
                     if (isLead) {
-                      onAddCard({ stageId, clientName, dealValue: extraField ? Number(extraField) : 10000 } as any);
+                      onAddCard({ stageId, clientName, dealValue: extraField ? Number(extraField) : 10000, currency } as any);
                     } else if (boardType === 'projects') {
                       onAddCard({ stageId, clientName, nextDeliverable: extraField } as any);
                     } else if (boardType === 'hiring') {
                       onAddCard({ stageId, clientName, roleAppliedFor: extraField } as any);
                     } else {
-                      onAddCard({ stageId, clientName, amount: extraField ? Number(extraField) : 0 } as any);
+                      onAddCard({ stageId, clientName, amount: extraField ? Number(extraField) : 0, currency } as any);
                     }
                   }}
                 />
@@ -256,5 +289,27 @@ export const Board: React.FC<BoardProps> = ({
         </div>
       )}
     </div>
+  );
+
+  return (
+    <>
+      {view === 'table' ? renderTableView() : renderKanbanView()}
+      <Drawer
+        isOpen={!!selectedCard}
+        onClose={() => setSelectedCardId(null)}
+        title={selectedCard?.clientName || 'Details'}
+      >
+        {selectedCard && (
+          <InlineCardDetail
+            card={selectedCard}
+            boardType={boardType}
+            stages={stages}
+            onClose={() => setSelectedCardId(null)}
+            onUpdate={onUpdateCard}
+            onDelete={onDeleteCard}
+          />
+        )}
+      </Drawer>
+    </>
   );
 };

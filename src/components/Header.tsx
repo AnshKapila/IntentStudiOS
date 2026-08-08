@@ -1,6 +1,6 @@
 import React from 'react';
 import { BoardType, BoardFilter } from '../types';
-import { Search, AlertCircle, Plus, RefreshCw, Download, Upload } from 'lucide-react';
+import { Search, AlertCircle, Plus, RefreshCw, Download, Upload, List, LayoutGrid } from 'lucide-react';
 
 interface HeaderProps {
   activeBoard: BoardType;
@@ -13,6 +13,8 @@ interface HeaderProps {
   onResetData: () => void;
   onExportData: () => void;
   onImportData: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  view?: 'table' | 'kanban';
+  onToggleView?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -24,6 +26,8 @@ export const Header: React.FC<HeaderProps> = ({
   onResetData,
   onExportData,
   onImportData,
+  view,
+  onToggleView,
 }) => {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -79,6 +83,30 @@ export const Header: React.FC<HeaderProps> = ({
             <Plus className="w-4 h-4" />
             <span>Quick Add</span>
           </button>
+
+          {/* View Toggle (if supported) */}
+          {view && onToggleView && (
+            <div className="flex items-center bg-white elevation-base rounded-lg p-0.5 ml-2">
+              <button
+                onClick={() => view !== 'table' && onToggleView()}
+                className={`p-1.5 rounded-md cursor-pointer transition-colors ${
+                  view === 'table' ? 'bg-[oklch(96%_0.01_95)] text-[oklch(28%_0.01_95)] shadow-xs' : 'text-[oklch(48%_0.01_95)] hover:text-[oklch(28%_0.01_95)] hover:bg-[oklch(98%_0.005_95)]'
+                }`}
+                title="Table View"
+              >
+                <List className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => view !== 'kanban' && onToggleView()}
+                className={`p-1.5 rounded-md cursor-pointer transition-colors ${
+                  view === 'kanban' ? 'bg-[oklch(96%_0.01_95)] text-[oklch(28%_0.01_95)] shadow-xs' : 'text-[oklch(48%_0.01_95)] hover:text-[oklch(28%_0.01_95)] hover:bg-[oklch(98%_0.005_95)]'
+                }`}
+                title="Kanban View"
+              >
+                <LayoutGrid className="w-4 h-4" />
+              </button>
+            </div>
+          )}
 
           {/* Settings & Portability Tools */}
           <div className="flex items-center pl-2 gap-1 opacity-50 hover:opacity-100 transition-opacity">

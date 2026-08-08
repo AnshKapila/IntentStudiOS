@@ -6,7 +6,7 @@ interface InlineAddCardProps {
   stageId: string;
   stageName: string;
   boardType: BoardType;
-  onAdd: (stageId: string, clientName: string, extraField?: string) => void;
+  onAdd: (stageId: string, clientName: string, extraField?: string, currency?: string) => void;
 }
 
 export const InlineAddCard: React.FC<InlineAddCardProps> = ({
@@ -18,12 +18,13 @@ export const InlineAddCard: React.FC<InlineAddCardProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [clientName, setClientName] = useState('');
   const [extraField, setExtraField] = useState(''); // dealValue or serviceType/nextDeliverable
+  const [currency, setCurrency] = useState('INR');
 
   const handleSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!clientName.trim()) return;
 
-    onAdd(stageId, clientName.trim(), extraField.trim());
+    onAdd(stageId, clientName.trim(), extraField.trim(), currency);
     setClientName('');
     setExtraField('');
     setIsOpen(false);
@@ -92,13 +93,27 @@ export const InlineAddCard: React.FC<InlineAddCardProps> = ({
         <label className="chip-stage text-[oklch(48%_0.01_95)] block mb-1">
           {getSecondaryLabel()}
         </label>
-        <input
-          type={isNumberField ? 'number' : 'text'}
-          placeholder={getSecondaryPlaceholder()}
-          value={extraField}
-          onChange={(e) => setExtraField(e.target.value)}
-          className="w-full px-3 py-1.5 text-[14px] font-medium bg-[oklch(98%_0.005_95)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[oklch(28%_0.01_95)] focus:bg-white text-[oklch(28%_0.01_95)] transition-all"
-        />
+        <div className="flex gap-2">
+          {isNumberField && (
+            <select
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value)}
+              className="w-24 px-2 py-1.5 text-[14px] font-medium bg-[oklch(96%_0.01_95)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[oklch(28%_0.01_95)] text-[oklch(28%_0.01_95)] transition-all"
+            >
+              <option value="INR">INR</option>
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+              <option value="GBP">GBP</option>
+            </select>
+          )}
+          <input
+            type={isNumberField ? 'number' : 'text'}
+            placeholder={getSecondaryPlaceholder()}
+            value={extraField}
+            onChange={(e) => setExtraField(e.target.value)}
+            className="flex-1 px-3 py-1.5 text-[14px] font-medium bg-[oklch(98%_0.005_95)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[oklch(28%_0.01_95)] focus:bg-white text-[oklch(28%_0.01_95)] transition-all"
+          />
+        </div>
       </div>
 
       <div className="flex items-center justify-end gap-1.5 pt-2">

@@ -42,10 +42,10 @@ export function calculateUrgency(card: BoardCard, boardType: string): UrgencyLev
   }
 }
 
-export function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('en-US', {
+export function formatCurrency(value: number, currency: string = 'INR'): string {
+  return new Intl.NumberFormat('en-IN', {
     style: 'currency',
-    currency: 'USD',
+    currency: currency,
     maximumFractionDigits: 0,
   }).format(value);
 }

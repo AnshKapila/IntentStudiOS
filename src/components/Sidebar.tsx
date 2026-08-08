@@ -20,7 +20,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <aside
-      className={`fixed left-0 top-0 bottom-0 z-40 bg-[oklch(98%_0.005_95)] flex flex-col transition-all ease-out-expo duration-220 ${
+      className={`hidden md:flex fixed left-0 top-0 bottom-0 z-40 bg-[oklch(98%_0.005_95)] flex-col transition-all ease-out-expo duration-220 ${
         expanded ? 'w-[240px]' : 'w-[64px]'
       }`}
       style={{ boxShadow: '1px 0 2px oklch(20% 0 0 / 4%)' }} // Sidebar divider shadow
@@ -29,7 +29,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     >
       <div className="flex items-center h-16 px-4 shrink-0 overflow-hidden">
         <button
-          onClick={onToggleExpand}
+          onClick={() => onBoardChange('leads')}
           className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white text-[oklch(48%_0.01_95)] hover:text-[oklch(28%_0.01_95)] transition-colors cursor-pointer"
         >
           <div className="w-5 h-5 bg-[oklch(28%_0.01_95)] rounded-[4px] flex items-center justify-center">
@@ -42,7 +42,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             expanded ? 'opacity-100' : 'opacity-0'
           }`}
         >
-          indent StudiOS
+          Intent StudiOS
         </span>
       </div>
 
@@ -127,6 +127,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </span>
         </button>
       </nav>
+
+      <div className="p-3 shrink-0">
+        <button className="w-full flex items-center h-10 px-2 rounded-lg text-[oklch(48%_0.01_95)] hover:text-[oklch(28%_0.01_95)] hover:bg-[oklch(97%_0.005_95)] transition-colors cursor-pointer whitespace-nowrap">
+          <div className="w-6 h-6 flex items-center justify-center shrink-0">
+            <div className="w-[20px] h-[20px] rounded-full bg-[oklch(85%_0.01_95)] flex items-center justify-center text-[10px] font-bold text-[oklch(28%_0.01_95)]">
+              AK
+            </div>
+          </div>
+          <span
+            className={`ml-3 text-[14px] font-medium transition-opacity duration-220 ${
+              expanded ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            My Profile
+          </span>
+        </button>
+      </div>
     </aside>
   );
 };

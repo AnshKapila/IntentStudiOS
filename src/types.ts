@@ -32,6 +32,7 @@ export interface BaseCard {
   updatedAt: string;
   checklist?: ChecklistItem[];
   customFields?: CustomField[];
+  currency?: string;
 }
 
 export interface LeadCard extends BaseCard {
@@ -59,6 +60,8 @@ export interface EarningsCard extends BaseCard {
   amount: number;
   paymentMethod: string;
   dueDate: string; // YYYY-MM-DD
+  type?: 'audit' | 'project';
+  receiptFile?: string; // Optional URL or base64 of receipt
 }
 
 export type BoardCard = LeadCard | ProjectCard | HiringCard | EarningsCard;

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BoardType, BoardCard, LeadCard, ProjectCard, HiringCard, EarningsCard, BoardFilter } from './types';
+import { Briefcase, Layers, Users, DollarSign } from 'lucide-react';
 import { LEAD_STAGES, PROJECT_STAGES, HIRING_STAGES, EARNINGS_STAGES, INITIAL_LEADS, INITIAL_PROJECTS, INITIAL_HIRING, INITIAL_EARNINGS } from './data/initialData';
 import { calculateUrgency, getTodayDateString } from './utils';
 import { Header } from './components/Header';
@@ -15,6 +16,12 @@ const LOCAL_STORAGE_EARNINGS_KEY = 'intent_studios_earnings_v1';
 export default function App() {
   const [activeBoard, setActiveBoard] = useState<BoardType>('leads');
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
+  const [boardViews, setBoardViews] = useState<Record<string, 'kanban' | 'table'>>({
+    leads: 'table',
+    projects: 'table',
+    hiring: 'kanban',
+    earnings: 'table'
+  });
   
   // Persistence initialized from localStorage or initial seed
   const [leads, setLeads] = useState<LeadCard[]>(() => {
@@ -192,21 +199,29 @@ export default function App() {
       />
 
       <div
-        className="flex-1 flex flex-col transition-all ease-out-expo duration-220 min-h-screen relative"
-        style={{ marginLeft: isSidebarExpanded ? '240px' : '64px' }}
+        className={`flex-1 flex flex-col transition-all ease-out-expo duration-220 min-h-screen relative pb-16 md:pb-0 ${
+          isSidebarExpanded ? 'md:ml-[240px]' : 'md:ml-[64px]'
+        }`}
       >
-        <Header
-          activeBoard={activeBoard}
-          leadsCount={leads.length}
-          projectsCount={projects.length}
-          urgentCount={urgentCount}
-          filter={filter}
-          onFilterChange={setFilter}
-          onQuickAdd={handleQuickAddTrigger}
-          onResetData={handleResetData}
-          onExportData={handleExportData}
-          onImportData={handleImportData}
-        />
+          <Header
+            activeBoard={activeBoard}
+            leadsCount={leads.length}
+            projectsCount={projects.length}
+            urgentCount={urgentCount}
+            filter={filter}
+            onFilterChange={setFilter}
+            onQuickAdd={handleQuickAddTrigger}
+            onResetData={handleResetData}
+            onExportData={handleExportData}
+            onImportData={handleImportData}
+            view={boardViews[activeBoard]}
+            onToggleView={() => {
+              setBoardViews(prev => ({
+                ...prev,
+                [activeBoard]: prev[activeBoard] === 'table' ? 'kanban' : 'table'
+              }));
+            }}
+          />
 
         <main className="flex-1 flex flex-col relative overflow-hidden">
           <AnimatePresence mode="wait">
@@ -223,6 +238,8 @@ export default function App() {
                 stages={currentStages}
                 cards={currentCards}
                 filter={filter}
+                view={boardViews[activeBoard]}
+                projects={projects}
                 onUpdateCard={handleUpdateCard}
                 onDeleteCard={handleDeleteCard}
                 onAddCard={handleAddCard}
@@ -233,6 +250,45 @@ export default function App() {
         </main>
       </div>
 
+      {/* Mobile Bottom Navigation */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-[oklch(90%_0.01_95)] flex items-center justify-around px-2 z-50">
+        <button
+          onClick={() => setActiveBoard('leads')}
+          className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${
+            activeBoard === 'leads' ? 'text-[oklch(28%_0.01_95)]' : 'text-[oklch(48%_0.01_95)]'
+          }`}
+        >
+          <Briefcase className="w-5 h-5" />
+          <span className="text-[10px] font-medium">Leads</span>
+        </button>
+        <button
+          onClick={() => setActiveBoard('projects')}
+          className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${
+            activeBoard === 'projects' ? 'text-[oklch(28%_0.01_95)]' : 'text-[oklch(48%_0.01_95)]'
+          }`}
+        >
+          <Layers className="w-5 h-5" />
+          <span className="text-[10px] font-medium">Projects</span>
+        </button>
+        <button
+          onClick={() => setActiveBoard('hiring')}
+          className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${
+            activeBoard === 'hiring' ? 'text-[oklch(28%_0.01_95)]' : 'text-[oklch(48%_0.01_95)]'
+          }`}
+        >
+          <Users className="w-5 h-5" />
+          <span className="text-[10px] font-medium">Hiring</span>
+        </button>
+        <button
+          onClick={() => setActiveBoard('earnings')}
+          className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${
+            activeBoard === 'earnings' ? 'text-[oklch(28%_0.01_95)]' : 'text-[oklch(48%_0.01_95)]'
+          }`}
+        >
+          <DollarSign className="w-5 h-5" />
+          <span className="text-[10px] font-medium">Earnings</span>
+        </button>
+      </nav>
     </div>
   );
 }

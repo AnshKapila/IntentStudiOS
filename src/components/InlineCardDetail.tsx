@@ -190,13 +190,25 @@ export const InlineCardDetail: React.FC<InlineCardDetailProps> = ({
                 <DollarSign className="w-3.5 h-3.5" />
                 Deal Value
               </label>
-              <input
-                type="number"
-                value={lead.dealValue || ''}
-                onChange={(e) => handleFieldChange('dealValue', Number(e.target.value))}
-                className="w-full text-[14px] font-mono font-medium text-[oklch(28%_0.01_95)] bg-white rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-[oklch(28%_0.01_95)] elevation-base"
-                placeholder="0"
-              />
+              <div className="flex gap-2">
+                <select
+                  value={lead.currency || 'INR'}
+                  onChange={(e) => handleFieldChange('currency', e.target.value)}
+                  className="w-24 text-[14px] font-medium text-[oklch(28%_0.01_95)] bg-[oklch(96%_0.01_95)] rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-[oklch(28%_0.01_95)]"
+                >
+                  <option value="INR">INR</option>
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="GBP">GBP</option>
+                </select>
+                <input
+                  type="number"
+                  value={lead.dealValue || ''}
+                  onChange={(e) => handleFieldChange('dealValue', Number(e.target.value))}
+                  className="flex-1 text-[14px] font-mono font-medium text-[oklch(28%_0.01_95)] bg-white rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-[oklch(28%_0.01_95)] elevation-base"
+                  placeholder="0"
+                />
+              </div>
             </div>
 
             {/* Next Follow-up Date */}
@@ -422,13 +434,25 @@ export const InlineCardDetail: React.FC<InlineCardDetailProps> = ({
                 <DollarSign className="w-3.5 h-3.5" />
                 Amount
               </label>
-              <input
-                type="number"
-                value={earnings.amount || ''}
-                onChange={(e) => handleFieldChange('amount', Number(e.target.value))}
-                className="w-full text-[14px] font-mono font-medium text-[oklch(28%_0.01_95)] bg-white rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-[oklch(28%_0.01_95)] elevation-base"
-                placeholder="0"
-              />
+              <div className="flex gap-2">
+                <select
+                  value={earnings.currency || 'INR'}
+                  onChange={(e) => handleFieldChange('currency', e.target.value)}
+                  className="w-24 text-[14px] font-medium text-[oklch(28%_0.01_95)] bg-[oklch(96%_0.01_95)] rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-[oklch(28%_0.01_95)]"
+                >
+                  <option value="INR">INR</option>
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="GBP">GBP</option>
+                </select>
+                <input
+                  type="number"
+                  value={earnings.amount || ''}
+                  onChange={(e) => handleFieldChange('amount', Number(e.target.value))}
+                  className="flex-1 text-[14px] font-mono font-medium text-[oklch(28%_0.01_95)] bg-white rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-[oklch(28%_0.01_95)] elevation-base"
+                  placeholder="0"
+                />
+              </div>
             </div>
 
             <div>
