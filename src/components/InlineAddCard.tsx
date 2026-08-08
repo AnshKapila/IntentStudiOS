@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import { Plus, X, Check } from 'lucide-react';
+import { BoardType } from '../types';
 
 interface InlineAddCardProps {
   stageId: string;
   stageName: string;
-  isLead: boolean;
+  boardType: BoardType;
   onAdd: (stageId: string, clientName: string, extraField?: string) => void;
 }
 
 export const InlineAddCard: React.FC<InlineAddCardProps> = ({
   stageId,
   stageName,
-  isLead,
+  boardType,
   onAdd,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,47 +33,75 @@ export const InlineAddCard: React.FC<InlineAddCardProps> = ({
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded bg-[oklch(98%_0.005_95)] border border-dashed border-[oklch(90%_0.006_95)] text-[13px] font-medium text-[oklch(45%_0.01_95)] hover:bg-white hover:text-[oklch(20%_0.01_95)] hover:border-[oklch(45%_0.01_95)] transition-all cursor-pointer group"
+        className="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg bg-[oklch(98%_0.005_95)] text-[13px] font-medium text-[oklch(48%_0.01_95)] hover:bg-white hover:text-[oklch(28%_0.01_95)] hover:elevation-base transition-all cursor-pointer group border-0"
       >
-        <Plus className="w-3.5 h-3.5 text-[oklch(45%_0.01_95)] group-hover:text-[oklch(20%_0.01_95)]" />
-        <span>+ Quick Add Card</span>
+        <Plus className="w-3.5 h-3.5 text-[oklch(48%_0.01_95)] group-hover:text-[oklch(28%_0.01_95)]" />
+        <span>Quick Add Card</span>
       </button>
     );
   }
 
+  const getPrimaryLabel = () => {
+    if (boardType === 'hiring') return 'Candidate Name';
+    return 'Client Name';
+  };
+
+  const getPrimaryPlaceholder = () => {
+    if (boardType === 'hiring') return 'e.g. Jane Doe';
+    return 'e.g. Acme Corp';
+  };
+
+  const getSecondaryLabel = () => {
+    if (boardType === 'leads') return 'Deal Value';
+    if (boardType === 'projects') return 'Next Deliverable / Service';
+    if (boardType === 'hiring') return 'Role Applied For';
+    if (boardType === 'earnings') return 'Amount';
+    return '';
+  };
+
+  const getSecondaryPlaceholder = () => {
+    if (boardType === 'leads') return 'e.g. 85000';
+    if (boardType === 'projects') return 'e.g. web, video, app';
+    if (boardType === 'hiring') return 'e.g. Senior Developer';
+    if (boardType === 'earnings') return 'e.g. 5000';
+    return '';
+  };
+
+  const isNumberField = boardType === 'leads' || boardType === 'earnings';
+
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white p-3 rounded-lg border border-[oklch(20%_0.01_95)] space-y-2.5 animate-in fade-in duration-150"
+      className="bg-white p-3 rounded-xl elevation-base space-y-2.5 animate-in fade-in duration-150"
     >
       <div>
-        <label className="chip-stage text-[oklch(45%_0.01_95)] block mb-1">
-          Client Name
+        <label className="chip-stage text-[oklch(48%_0.01_95)] block mb-1">
+          {getPrimaryLabel()}
         </label>
         <input
           type="text"
           autoFocus
-          placeholder="e.g. Acme Corp"
+          placeholder={getPrimaryPlaceholder()}
           value={clientName}
           onChange={(e) => setClientName(e.target.value)}
-          className="w-full px-2.5 py-1 text-[13px] font-medium bg-[oklch(98%_0.005_95)] border border-[oklch(90%_0.006_95)] rounded focus:outline-none focus:border-[oklch(20%_0.01_95)] text-[oklch(20%_0.01_95)]"
+          className="w-full px-3 py-1.5 text-[14px] font-medium bg-[oklch(98%_0.005_95)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[oklch(28%_0.01_95)] focus:bg-white text-[oklch(28%_0.01_95)] transition-all"
         />
       </div>
 
       <div>
-        <label className="chip-stage text-[oklch(45%_0.01_95)] block mb-1">
-          {isLead ? 'Deal Value (₹ / $)' : 'Next Deliverable / Service'}
+        <label className="chip-stage text-[oklch(48%_0.01_95)] block mb-1">
+          {getSecondaryLabel()}
         </label>
         <input
-          type={isLead ? 'number' : 'text'}
-          placeholder={isLead ? 'e.g. 85000' : 'e.g. web, video, app, branding+UIUX'}
+          type={isNumberField ? 'number' : 'text'}
+          placeholder={getSecondaryPlaceholder()}
           value={extraField}
           onChange={(e) => setExtraField(e.target.value)}
-          className="w-full px-2.5 py-1 text-[13px] font-medium bg-[oklch(98%_0.005_95)] border border-[oklch(90%_0.006_95)] rounded focus:outline-none focus:border-[oklch(20%_0.01_95)] text-[oklch(20%_0.01_95)]"
+          className="w-full px-3 py-1.5 text-[14px] font-medium bg-[oklch(98%_0.005_95)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[oklch(28%_0.01_95)] focus:bg-white text-[oklch(28%_0.01_95)] transition-all"
         />
       </div>
 
-      <div className="flex items-center justify-end gap-1.5 pt-1">
+      <div className="flex items-center justify-end gap-1.5 pt-2">
         <button
           type="button"
           onClick={() => {
@@ -80,14 +109,14 @@ export const InlineAddCard: React.FC<InlineAddCardProps> = ({
             setClientName('');
             setExtraField('');
           }}
-          className="px-2 py-1 text-[#706F6C] hover:text-[#1A1A18] text-[13px] font-medium cursor-pointer"
+          className="px-3 py-1.5 text-[oklch(48%_0.01_95)] hover:text-[oklch(28%_0.01_95)] hover:bg-[oklch(98%_0.005_95)] rounded-lg text-[13px] font-medium cursor-pointer transition-colors"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={!clientName.trim()}
-          className="flex items-center gap-1 px-3 py-1 bg-[oklch(20%_0.01_95)] text-white rounded text-[13px] font-medium hover:bg-[oklch(30%_0.01_95)] disabled:opacity-50 cursor-pointer"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-[oklch(28%_0.01_95)] text-white rounded-lg text-[13px] font-medium hover:bg-[oklch(38%_0.01_95)] disabled:opacity-50 cursor-pointer elevation-base transition-colors"
         >
           <Check className="w-3.5 h-3.5" />
           <span>Save</span>

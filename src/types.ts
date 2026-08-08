@@ -1,4 +1,4 @@
-export type BoardType = 'leads' | 'projects';
+export type BoardType = 'leads' | 'projects' | 'hiring' | 'earnings';
 
 export type ServiceType = 'web' | 'video' | 'branding+UIUX' | 'app';
 
@@ -6,6 +6,13 @@ export interface ChecklistItem {
   id: string;
   text: string;
   completed: boolean;
+}
+
+export interface CustomField {
+  id: string;
+  label: string;
+  value: string;
+  description?: string;
 }
 
 export interface StageConfig {
@@ -24,6 +31,7 @@ export interface BaseCard {
   createdAt: string;
   updatedAt: string;
   checklist?: ChecklistItem[];
+  customFields?: CustomField[];
 }
 
 export interface LeadCard extends BaseCard {
@@ -40,7 +48,20 @@ export interface ProjectCard extends BaseCard {
   deliverableDueDate?: string; // YYYY-MM-DD
 }
 
-export type BoardCard = LeadCard | ProjectCard;
+export interface HiringCard extends BaseCard {
+  roleAppliedFor: string;
+  contact: string;
+  nextStepDate: string; // YYYY-MM-DD
+}
+
+export interface EarningsCard extends BaseCard {
+  linkedProjectName: string;
+  amount: number;
+  paymentMethod: string;
+  dueDate: string; // YYYY-MM-DD
+}
+
+export type BoardCard = LeadCard | ProjectCard | HiringCard | EarningsCard;
 
 export interface BoardFilter {
   searchQuery: string;

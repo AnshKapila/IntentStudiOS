@@ -1,21 +1,39 @@
-import { StageConfig, LeadCard, ProjectCard } from '../types';
+import { StageConfig, LeadCard, ProjectCard, HiringCard, EarningsCard } from '../types';
 
 export const LEAD_STAGES: StageConfig[] = [
-  { id: 'outreach', name: 'Outreach', chipColor: 'oklch(60% 0.01 95)' },
-  { id: 'discovery_done', name: 'Discovery Done', chipColor: 'oklch(65% 0.12 250)' },
-  { id: 'quotation_sent', name: 'Quotation Sent', chipColor: 'oklch(75% 0.14 80)' },
-  { id: 'won', name: 'Won', chipColor: 'oklch(70% 0.15 145)' },
-  { id: 'lost', name: 'Lost', chipColor: 'oklch(60% 0.12 25)' },
+  { id: 'outreach', name: 'Outreach', chipColor: 'oklch(85% 0.005 95)' },
+  { id: 'discovery_done', name: 'Discovery Done', chipColor: 'oklch(68% 0.08 250)' },
+  { id: 'quotation_sent', name: 'Quotation Sent', chipColor: 'oklch(78% 0.09 80)' },
+  { id: 'won', name: 'Won', chipColor: 'oklch(72% 0.10 145)' },
+  { id: 'lost', name: 'Lost', chipColor: 'oklch(63% 0.08 25)' },
 ];
 
 export const PROJECT_STAGES: StageConfig[] = [
-  { id: 'onboarding', name: 'Onboarding', chipColor: 'oklch(60% 0.01 95)' },
-  { id: 'allocation', name: 'Allocation', chipColor: 'oklch(65% 0.12 250)' },
-  { id: 'in_progress', name: 'In Progress', chipColor: 'oklch(75% 0.14 80)' },
-  { id: 'client_review', name: 'Client Review', chipColor: 'oklch(65% 0.12 250)' },
-  { id: 'revisions', name: 'Revisions', chipColor: 'oklch(75% 0.14 80)' },
-  { id: 'handoff', name: 'Handoff', chipColor: 'oklch(70% 0.15 145)' },
+  { id: 'onboarding', name: 'Onboarding', chipColor: 'oklch(85% 0.005 95)' },
+  { id: 'allocation', name: 'Allocation', chipColor: 'oklch(68% 0.08 250)' },
+  { id: 'in_progress', name: 'In Progress', chipColor: 'oklch(78% 0.09 80)' },
+  { id: 'client_review', name: 'Client Review', chipColor: 'oklch(68% 0.08 250)' },
+  { id: 'revisions', name: 'Revisions', chipColor: 'oklch(78% 0.09 80)' },
+  { id: 'handoff', name: 'Handoff', chipColor: 'oklch(72% 0.10 145)' },
 ];
+
+export const HIRING_STAGES: StageConfig[] = [
+  { id: 'applied', name: 'Applied', chipColor: 'oklch(85% 0.005 95)' },
+  { id: 'interview', name: 'Interview', chipColor: 'oklch(68% 0.08 250)' },
+  { id: 'offer', name: 'Offer', chipColor: 'oklch(78% 0.09 80)' },
+  { id: 'hired', name: 'Hired', chipColor: 'oklch(72% 0.10 145)' },
+  { id: 'rejected', name: 'Rejected', chipColor: 'oklch(63% 0.08 25)' },
+];
+
+export const EARNINGS_STAGES: StageConfig[] = [
+  { id: 'pending_invoice', name: 'Pending Invoice', chipColor: 'oklch(85% 0.005 95)' },
+  { id: 'partially_paid', name: 'Partially Paid', chipColor: 'oklch(78% 0.09 80)' },
+  { id: 'paid', name: 'Paid', chipColor: 'oklch(72% 0.10 145)' },
+  { id: 'overdue', name: 'Overdue', chipColor: 'oklch(63% 0.08 25)' },
+];
+
+export const INITIAL_HIRING: HiringCard[] = [];
+export const INITIAL_EARNINGS: EarningsCard[] = [];
 
 export const INITIAL_LEADS: LeadCard[] = [
   {

@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { BoardType, BoardCard, LeadCard, ProjectCard, BoardFilter } from './types';
-import { LEAD_STAGES, PROJECT_STAGES, INITIAL_LEADS, INITIAL_PROJECTS } from './data/initialData';
+import { BoardType, BoardCard, LeadCard, ProjectCard, HiringCard, EarningsCard, BoardFilter } from './types';
+import { LEAD_STAGES, PROJECT_STAGES, HIRING_STAGES, EARNINGS_STAGES, INITIAL_LEADS, INITIAL_PROJECTS, INITIAL_HIRING, INITIAL_EARNINGS } from './data/initialData';
 import { calculateUrgency, getTodayDateString } from './utils';
 import { Header } from './components/Header';
-import { UrgencyBanner } from './components/UrgencyBanner';
+import { Sidebar } from './components/Sidebar';
 import { Board } from './components/Board';
-import { InlineCardDetail } from './components/InlineCardDetail';
+import { AnimatePresence, motion } from 'framer-motion';
 
 const LOCAL_STORAGE_LEADS_KEY = 'intent_studios_leads_v1';
 const LOCAL_STORAGE_PROJECTS_KEY = 'intent_studios_projects_v1';
+const LOCAL_STORAGE_HIRING_KEY = 'intent_studios_hiring_v1';
+const LOCAL_STORAGE_EARNINGS_KEY = 'intent_studios_earnings_v1';
 
 export default function App() {
   const [activeBoard, setActiveBoard] = useState<BoardType>('leads');
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   
   // Persistence initialized from localStorage or initial seed
   const [leads, setLeads] = useState<LeadCard[]>(() => {
@@ -30,8 +33,21 @@ export default function App() {
     return INITIAL_PROJECTS;
   });
 
-  // Selected Card for Inline Side Panel Detail
-  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+  const [hiring, setHiring] = useState<HiringCard[]>(() => {
+    const saved = localStorage.getItem(LOCAL_STORAGE_HIRING_KEY);
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) { console.error(e); }
+    }
+    return INITIAL_HIRING;
+  });
+
+  const [earnings, setEarnings] = useState<EarningsCard[]>(() => {
+    const saved = localStorage.getItem(LOCAL_STORAGE_EARNINGS_KEY);
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) { console.error(e); }
+    }
+    return INITIAL_EARNINGS;
+  });
 
   // Filter & Search State
   const [filter, setFilter] = useState<BoardFilter>({
@@ -49,88 +65,71 @@ export default function App() {
     localStorage.setItem(LOCAL_STORAGE_PROJECTS_KEY, JSON.stringify(projects));
   }, [projects]);
 
+  useEffect(() => {
+    localStorage.setItem(LOCAL_STORAGE_HIRING_KEY, JSON.stringify(hiring));
+  }, [hiring]);
+
+  useEffect(() => {
+    localStorage.setItem(LOCAL_STORAGE_EARNINGS_KEY, JSON.stringify(earnings));
+  }, [earnings]);
+
   // Current active dataset
-  const currentCards: BoardCard[] = activeBoard === 'leads' ? leads : projects;
-  const currentStages = activeBoard === 'leads' ? LEAD_STAGES : PROJECT_STAGES;
+  const currentCards: BoardCard[] = activeBoard === 'leads' ? leads : activeBoard === 'projects' ? projects : activeBoard === 'hiring' ? hiring : earnings;
+  const currentStages = activeBoard === 'leads' ? LEAD_STAGES : activeBoard === 'projects' ? PROJECT_STAGES : activeBoard === 'hiring' ? HIRING_STAGES : EARNINGS_STAGES;
 
-  // Find selected card object
-  const selectedCard = currentCards.find(c => c.id === selectedCardId) || null;
-
-  // Calculate urgent items count across both boards for header badge
-  const isLeadBoard = activeBoard === 'leads';
+  // Calculate urgent items count across all boards for header badge (if applicable, currently Leads/Projects)
   const urgentCount = currentCards.filter(c => {
-    const urgency = calculateUrgency(c, isLeadBoard);
+    const urgency = calculateUrgency(c, activeBoard);
     return urgency === 'overdue' || urgency === 'today';
   }).length;
 
   // Handlers
-  const handleMoveCard = (cardId: string, newStageId: string) => {
-    if (activeBoard === 'leads') {
-      setLeads(prev => prev.map(c => c.id === cardId ? { ...c, stageId: newStageId, updatedAt: getTodayDateString() } : c));
-    } else {
-      setProjects(prev => prev.map(c => c.id === cardId ? { ...c, stageId: newStageId, updatedAt: getTodayDateString() } : c));
-    }
-  };
-
   const handleUpdateCard = (updatedCard: BoardCard) => {
     if (activeBoard === 'leads') {
       setLeads(prev => prev.map(c => c.id === updatedCard.id ? (updatedCard as LeadCard) : c));
-    } else {
+    } else if (activeBoard === 'projects') {
       setProjects(prev => prev.map(c => c.id === updatedCard.id ? (updatedCard as ProjectCard) : c));
+    } else if (activeBoard === 'hiring') {
+      setHiring(prev => prev.map(c => c.id === updatedCard.id ? (updatedCard as HiringCard) : c));
+    } else {
+      setEarnings(prev => prev.map(c => c.id === updatedCard.id ? (updatedCard as EarningsCard) : c));
     }
   };
 
-  const handleAddCard = (stageId: string, clientName: string, extraField?: string) => {
-    const newId = (activeBoard === 'leads' ? 'lead-' : 'proj-') + Date.now();
+  const handleAddCard = (card: Omit<BoardCard, 'id' | 'createdAt' | 'updatedAt'>) => {
+    const newId = (activeBoard === 'leads' ? 'lead-' : activeBoard === 'projects' ? 'proj-' : activeBoard === 'hiring' ? 'hire-' : 'earn-') + Date.now();
     const today = getTodayDateString();
+    
+    const baseFields = {
+      ...card,
+      id: newId,
+      owner: 'AK',
+      shortNotes: 'Newly added card.',
+      createdAt: today,
+      updatedAt: today,
+      checklist: [],
+    };
 
     if (activeBoard === 'leads') {
-      const dealValue = extraField ? Number(extraField) || 0 : 10000;
-      const newLead: LeadCard = {
-        id: newId,
-        clientName,
-        stageId,
-        contact: '',
-        dealValue,
-        nextFollowUpDate: today,
-        rescheduleCount: 0,
-        owner: 'AK',
-        shortNotes: 'Newly added lead.',
-        createdAt: today,
-        updatedAt: today,
-        checklist: [],
-      };
-      setLeads(prev => [...prev, newLead]);
-      setSelectedCardId(newId);
+      setLeads(prev => [...prev, { ...baseFields, rescheduleCount: 0 } as LeadCard]);
+    } else if (activeBoard === 'projects') {
+      setProjects(prev => [...prev, { ...baseFields, serviceType: 'web', collaborators: ['Alex M.'] } as ProjectCard]);
+    } else if (activeBoard === 'hiring') {
+      setHiring(prev => [...prev, baseFields as HiringCard]);
     } else {
-      const nextDeliverable = extraField || 'Initial Setup & Brief';
-      const newProject: ProjectCard = {
-        id: newId,
-        clientName,
-        stageId,
-        serviceType: 'web',
-        owner: 'AK',
-        collaborators: ['Alex M.'],
-        nextDeliverable,
-        deliverableDueDate: today,
-        shortNotes: 'Newly added project.',
-        createdAt: today,
-        updatedAt: today,
-        checklist: [],
-      };
-      setProjects(prev => [...prev, newProject]);
-      setSelectedCardId(newId);
+      setEarnings(prev => [...prev, baseFields as EarningsCard]);
     }
   };
 
   const handleDeleteCard = (cardId: string) => {
     if (activeBoard === 'leads') {
       setLeads(prev => prev.filter(c => c.id !== cardId));
-    } else {
+    } else if (activeBoard === 'projects') {
       setProjects(prev => prev.filter(c => c.id !== cardId));
-    }
-    if (selectedCardId === cardId) {
-      setSelectedCardId(null);
+    } else if (activeBoard === 'hiring') {
+      setHiring(prev => prev.filter(c => c.id !== cardId));
+    } else {
+      setEarnings(prev => prev.filter(c => c.id !== cardId));
     }
   };
 
@@ -138,12 +137,13 @@ export default function App() {
     if (confirm('Reset to initial sample agency data?')) {
       setLeads(INITIAL_LEADS);
       setProjects(INITIAL_PROJECTS);
-      setSelectedCardId(null);
+      setHiring(INITIAL_HIRING);
+      setEarnings(INITIAL_EARNINGS);
     }
   };
 
   const handleExportData = () => {
-    const data = { leads, projects, exportedAt: new Date().toISOString() };
+    const data = { leads, projects, hiring, earnings, exportedAt: new Date().toISOString() };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -161,12 +161,10 @@ export default function App() {
     reader.onload = (event) => {
       try {
         const parsed = JSON.parse(event.target?.result as string);
-        if (parsed.leads && Array.isArray(parsed.leads)) {
-          setLeads(parsed.leads);
-        }
-        if (parsed.projects && Array.isArray(parsed.projects)) {
-          setProjects(parsed.projects);
-        }
+        if (parsed.leads && Array.isArray(parsed.leads)) setLeads(parsed.leads);
+        if (parsed.projects && Array.isArray(parsed.projects)) setProjects(parsed.projects);
+        if (parsed.hiring && Array.isArray(parsed.hiring)) setHiring(parsed.hiring);
+        if (parsed.earnings && Array.isArray(parsed.earnings)) setEarnings(parsed.earnings);
         alert('Data successfully imported!');
       } catch (err) {
         alert('Invalid JSON backup file.');
@@ -177,69 +175,63 @@ export default function App() {
 
   const handleQuickAddTrigger = () => {
     const firstStageId = currentStages[0].id;
-    handleAddCard(firstStageId, 'New Agency Client');
+    handleAddCard({
+      clientName: 'New Client',
+      stageId: firstStageId,
+    } as any);
   };
 
   return (
-    <div className="min-h-screen bg-[oklch(98%_0.005_95)] text-[oklch(20%_0.01_95)] flex flex-col font-sans antialiased selection:bg-[oklch(20%_0.01_95)] selection:text-white">
+    <div className="min-h-screen bg-[oklch(98%_0.005_95)] text-[oklch(28%_0.01_95)] flex font-sans antialiased selection:bg-[oklch(28%_0.01_95)] selection:text-white">
       
-      {/* Top Header */}
-      <Header
+      <Sidebar
         activeBoard={activeBoard}
-        onBoardChange={(board) => {
-          setActiveBoard(board);
-          setSelectedCardId(null);
-        }}
-        leadsCount={leads.length}
-        projectsCount={projects.length}
-        urgentCount={urgentCount}
-        filter={filter}
-        onFilterChange={setFilter}
-        onQuickAdd={handleQuickAddTrigger}
-        onResetData={handleResetData}
-        onExportData={handleExportData}
-        onImportData={handleImportData}
+        onBoardChange={setActiveBoard}
+        isExpanded={isSidebarExpanded}
+        onToggleExpand={() => setIsSidebarExpanded(!isSidebarExpanded)}
       />
 
-      {/* 2-Second Urgency Scan Summary Strip */}
-      <UrgencyBanner
-        cards={currentCards}
-        boardType={activeBoard}
-        onSelectCard={(id) => setSelectedCardId(id)}
-      />
-
-      {/* Main Board Primitive Rendering Area */}
-      <main className="flex-1 relative flex flex-col">
-        <Board
-          boardType={activeBoard}
-          stages={currentStages}
-          cards={currentCards}
-          selectedCardId={selectedCardId}
+      <div
+        className="flex-1 flex flex-col transition-all ease-out-expo duration-220 min-h-screen relative"
+        style={{ marginLeft: isSidebarExpanded ? '240px' : '64px' }}
+      >
+        <Header
+          activeBoard={activeBoard}
+          leadsCount={leads.length}
+          projectsCount={projects.length}
+          urgentCount={urgentCount}
           filter={filter}
-          onSelectCard={(id) => setSelectedCardId(id === selectedCardId ? null : id)}
-          onMoveCard={handleMoveCard}
-          onAddCard={handleAddCard}
-          onClearFilters={() => setFilter({ searchQuery: '', urgencyOnly: false, sortBy: 'date' })}
+          onFilterChange={setFilter}
+          onQuickAdd={handleQuickAddTrigger}
+          onResetData={handleResetData}
+          onExportData={handleExportData}
+          onImportData={handleImportData}
         />
 
-        {/* Right Side Drawer for Detailed Inline Editing */}
-        {selectedCard && (
-          <InlineCardDetail
-            card={selectedCard}
-            boardType={activeBoard}
-            stages={currentStages}
-            onClose={() => setSelectedCardId(null)}
-            onUpdate={handleUpdateCard}
-            onDelete={handleDeleteCard}
-          />
-        )}
-      </main>
-
-      {/* High Density Footer */}
-      <footer className="border-t border-[oklch(90%_0.006_95)] py-2.5 px-6 bg-[oklch(98%_0.005_95)] flex justify-between items-center text-metadata font-mono uppercase tracking-widest">
-        <span>Intent Studios OS</span>
-        <span>Internal Design Tool</span>
-      </footer>
+        <main className="flex-1 flex flex-col relative overflow-hidden">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeBoard}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15, ease: 'easeOut' }}
+              className="absolute inset-0 flex flex-col"
+            >
+              <Board
+                boardType={activeBoard}
+                stages={currentStages}
+                cards={currentCards}
+                filter={filter}
+                onUpdateCard={handleUpdateCard}
+                onDeleteCard={handleDeleteCard}
+                onAddCard={handleAddCard}
+                onClearFilters={() => setFilter({ searchQuery: '', urgencyOnly: false, sortBy: 'date' })}
+              />
+            </motion.div>
+          </AnimatePresence>
+        </main>
+      </div>
 
     </div>
   );

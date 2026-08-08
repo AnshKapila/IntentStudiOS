@@ -9,11 +9,19 @@ export function getTodayDateString(): string {
   return `${year}-${month}-${day}`;
 }
 
-export function calculateUrgency(card: BoardCard, isLead: boolean): UrgencyLevel {
+export function calculateUrgency(card: BoardCard, boardType: string): UrgencyLevel {
   const todayStr = getTodayDateString();
-  const targetDateStr = isLead 
-    ? (card as LeadCard).nextFollowUpDate 
-    : (card as ProjectCard).deliverableDueDate;
+  let targetDateStr: string | undefined;
+
+  if (boardType === 'leads') {
+    targetDateStr = (card as LeadCard).nextFollowUpDate;
+  } else if (boardType === 'projects') {
+    targetDateStr = (card as ProjectCard).deliverableDueDate;
+  } else if (boardType === 'hiring') {
+    targetDateStr = (card as any).nextStepDate;
+  } else if (boardType === 'earnings') {
+    targetDateStr = (card as any).dueDate;
+  }
 
   if (!targetDateStr) return 'normal';
 
