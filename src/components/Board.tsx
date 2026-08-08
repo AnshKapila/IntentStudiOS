@@ -8,6 +8,7 @@ import { ProjectsTable } from './ProjectsTable';
 import { LeadsTable } from './LeadsTable';
 import { EarningsTable } from './EarningsTable';
 import { Drawer } from './Drawer';
+import { UrgencyBanner } from './UrgencyBanner';
 import { FilterX } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
