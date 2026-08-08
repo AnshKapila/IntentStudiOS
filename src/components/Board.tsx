@@ -7,6 +7,7 @@ import { InlineCardDetail } from './InlineCardDetail';
 import { ProjectsTable } from './ProjectsTable';
 import { LeadsTable } from './LeadsTable';
 import { EarningsTable } from './EarningsTable';
+import { HiringTable } from './HiringTable';
 import { Drawer } from './Drawer';
 import { UrgencyBanner } from './UrgencyBanner';
 import { FilterX } from 'lucide-react';
@@ -137,6 +138,21 @@ export const Board: React.FC<BoardProps> = ({
             filter={filter}
             onUpdateCard={(card) => onUpdateCard(card)}
             onAddCard={onAddCard}
+            onRowClick={(id) => setSelectedCardId(id)}
+          />
+        </div>
+      );
+    }
+    if (boardType === 'hiring') {
+      return (
+        <div className="flex flex-col h-full overflow-hidden bg-[oklch(99%_0.005_95)] relative">
+          <UrgencyBanner boardType={boardType} cards={cards} onSelectCard={setSelectedCardId} />
+          <HiringTable
+            hiring={filteredCards as import('../types').HiringCard[]}
+            stages={stages}
+            filter={filter}
+            onUpdateCard={(card) => onUpdateCard(card as any)}
+            onAddCard={onAddCard as any}
             onRowClick={(id) => setSelectedCardId(id)}
           />
         </div>
