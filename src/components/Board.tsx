@@ -114,7 +114,7 @@ export const Board: React.FC<BoardProps> = ({
     if (boardType === 'projects') {
       return (
         <div className="flex flex-col h-full overflow-hidden bg-[oklch(99%_0.005_95)] relative">
-          <UrgencyBanner boardType={boardType} count={urgentCount} onClearFilters={onClearFilters} isFilterActive={filter.urgencyOnly} />
+          <UrgencyBanner boardType={boardType} cards={cards} onSelectCard={setSelectedCardId} />
           <ProjectsTable
             projects={filteredCards as ProjectCard[]}
             stages={stages}
@@ -129,7 +129,7 @@ export const Board: React.FC<BoardProps> = ({
     if (boardType === 'leads') {
       return (
         <div className="flex flex-col h-full overflow-hidden bg-[oklch(99%_0.005_95)] relative">
-          <UrgencyBanner boardType={boardType} count={urgentCount} onClearFilters={onClearFilters} isFilterActive={filter.urgencyOnly} />
+          <UrgencyBanner boardType={boardType} cards={cards} onSelectCard={setSelectedCardId} />
           <LeadsTable
             leads={filteredCards as LeadCard[]}
             stages={stages}
@@ -144,7 +144,7 @@ export const Board: React.FC<BoardProps> = ({
     if (boardType === 'earnings') {
       return (
         <div className="flex flex-col h-full overflow-hidden bg-[oklch(99%_0.005_95)] relative">
-          <UrgencyBanner boardType={boardType} count={urgentCount} onClearFilters={onClearFilters} isFilterActive={filter.urgencyOnly} />
+          <UrgencyBanner boardType={boardType} cards={cards} onSelectCard={setSelectedCardId} />
           <EarningsTable
             earnings={filteredCards as EarningsCard[]}
             stages={stages}
