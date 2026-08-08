@@ -32,7 +32,7 @@ export const EarningsTable: React.FC<EarningsTableProps> = ({
   const filteredEarnings = earnings.filter(e => {
     const q = (localSearch || filter.searchQuery).toLowerCase();
     if (!q) return true;
-    return e.clientName.toLowerCase().includes(q) || e.linkedProjectName.toLowerCase().includes(q);
+    return (e.clientName || '').toLowerCase().includes(q) || (e.linkedProjectName || '').toLowerCase().includes(q);
   });
 
   const handleEditStart = (e: React.MouseEvent, id: string, field: string, initialValue: string) => {

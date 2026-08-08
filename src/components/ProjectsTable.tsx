@@ -31,7 +31,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
   const filteredProjects = projects.filter(p => {
     const q = (localSearch || filter.searchQuery).toLowerCase();
     if (!q) return true;
-    return p.clientName.toLowerCase().includes(q) || p.serviceType.toLowerCase().includes(q);
+    return (p.clientName || '').toLowerCase().includes(q) || (p.serviceType || '').toLowerCase().includes(q);
   });
 
   const getProgress = (checklist?: ChecklistItem[]) => {
@@ -174,14 +174,14 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                   </td>
                   <td className="px-4 py-2.5">
                     <div className="flex -space-x-1.5">
-                      {project.collaborators.slice(0, 3).map((collab, i) => (
+                      {(project.collaborators || []).slice(0, 3).map((collab, i) => (
                         <div key={i} className="w-6 h-6 rounded-full bg-[oklch(90%_0.01_95)] border-2 border-white flex items-center justify-center text-[10px] font-bold text-[oklch(28%_0.01_95)]" title={collab}>
                           {getInitials(collab)}
                         </div>
                       ))}
-                      {project.collaborators.length > 3 && (
+                      {(project.collaborators || []).length > 3 && (
                         <div className="w-6 h-6 rounded-full bg-[oklch(95%_0.01_95)] border-2 border-white flex items-center justify-center text-[9px] font-bold text-[oklch(48%_0.01_95)]">
-                          +{project.collaborators.length - 3}
+                          +{(project.collaborators || []).length - 3}
                         </div>
                       )}
                     </div>

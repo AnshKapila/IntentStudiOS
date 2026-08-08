@@ -54,8 +54,8 @@ export const Board: React.FC<BoardProps> = ({
   const filteredCards = cards.filter(card => {
     if (filter.searchQuery.trim()) {
       const q = filter.searchQuery.toLowerCase();
-      const matchName = card.clientName.toLowerCase().includes(q);
-      const matchNotes = card.shortNotes.toLowerCase().includes(q);
+      const matchName = card.clientName?.toLowerCase().includes(q) ?? false;
+      const matchNotes = card.shortNotes?.toLowerCase().includes(q) ?? false;
       const matchContact = isLead ? (card as LeadCard).contact?.toLowerCase().includes(q) : false;
       const matchDeliverable = boardType === 'projects' ? (card as ProjectCard).nextDeliverable?.toLowerCase().includes(q) : false;
       const matchRole = boardType === 'hiring' ? (card as any).roleAppliedFor?.toLowerCase().includes(q) : false;

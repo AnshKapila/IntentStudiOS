@@ -31,7 +31,7 @@ export const LeadsTable: React.FC<LeadsTableProps> = ({
   const filteredLeads = leads.filter(l => {
     const q = (localSearch || filter.searchQuery).toLowerCase();
     if (!q) return true;
-    return l.clientName.toLowerCase().includes(q) || l.contact.toLowerCase().includes(q);
+    return (l.clientName || '').toLowerCase().includes(q) || (l.contact || '').toLowerCase().includes(q);
   });
 
   const handleEditStart = (e: React.MouseEvent, id: string, field: string, initialValue: string) => {
