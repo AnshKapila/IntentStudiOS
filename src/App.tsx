@@ -17,7 +17,7 @@ export default function App() {
   const [activeBoard, setActiveBoard] = useState<BoardType>('leads');
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   const [boardViews, setBoardViews] = useState<Record<string, 'kanban' | 'table'>>({
-    leads: 'table',
+    leads: 'kanban',
     projects: 'table',
     hiring: 'kanban',
     earnings: 'table'
