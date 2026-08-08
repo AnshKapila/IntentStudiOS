@@ -18,7 +18,7 @@ export const UrgencyBanner: React.FC<UrgencyBannerProps> = ({
 
   // Filter urgent cards (overdue or today)
   const urgentCards = cards
-    .map(card => ({ card, urgency: calculateUrgency(card, isLead) }))
+    .map(card => ({ card, urgency: calculateUrgency(card, boardType) }))
     .filter(item => item.urgency === 'overdue' || item.urgency === 'today');
 
   if (urgentCards.length === 0) return null;
