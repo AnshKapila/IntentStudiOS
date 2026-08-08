@@ -10,7 +10,7 @@ import { EarningsTable } from './EarningsTable';
 import { HiringTable } from './HiringTable';
 import { Drawer } from './Drawer';
 import { UrgencyBanner } from './UrgencyBanner';
-import { FilterX } from 'lucide-react';
+import { FilterX, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface BoardProps {
@@ -41,6 +41,8 @@ export const Board: React.FC<BoardProps> = ({
   const selectedCard = selectedCardId ? cards.find(c => c.id === selectedCardId) : null;
   const [draggedCardId, setDraggedCardId] = useState<string | null>(null);
   const [dragOverStageId, setDragOverStageId] = useState<string | null>(null);
+  const [dragOverDelete, setDragOverDelete] = useState(false);
+  const [deleteConfirmCardId, setDeleteConfirmCardId] = useState<string | null>(null);
 
   const handleSelectCard = (id: string) => {
     setSelectedCardId(prev => prev === id ? null : id);
@@ -305,6 +307,39 @@ export const Board: React.FC<BoardProps> = ({
           )}
         </div>
       )}
+
+      {/* Delete Drop Zone */}
+      <AnimatePresence>
+        {draggedCardId && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            className={`fixed bottom-8 left-1/2 -translate-x-1/2 w-96 p-4 rounded-xl border-2 border-dashed flex items-center justify-center gap-2 transition-colors z-50 shadow-2xl backdrop-blur-md ${
+              dragOverDelete
+                ? 'bg-red-500/20 border-red-500 text-red-600'
+                : 'bg-white/80 border-rose-300 text-rose-500 hover:bg-rose-50'
+            }`}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragOverDelete(true);
+            }}
+            onDragLeave={(e) => {
+              e.preventDefault();
+              setDragOverDelete(false);
+            }}
+            onDrop={(e) => {
+              e.preventDefault();
+              setDragOverDelete(false);
+              setDeleteConfirmCardId(draggedCardId);
+              setDraggedCardId(null);
+            }}
+          >
+            <Trash2 className="w-5 h-5" />
+            <span className="font-semibold text-sm">Drop here to permanently delete</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 
@@ -327,6 +362,38 @@ export const Board: React.FC<BoardProps> = ({
           />
         )}
       </Drawer>
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirmCardId && (
+        <div className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full border border-[oklch(90%_0.01_95)] animate-in zoom-in-95 duration-200">
+            <h3 className="text-lg font-bold text-[oklch(28%_0.01_95)] mb-2 flex items-center gap-2">
+              <Trash2 className="w-5 h-5 text-rose-500" />
+              Permanently Delete?
+            </h3>
+            <p className="text-sm text-[oklch(48%_0.01_95)] mb-6 leading-relaxed">
+              This action cannot be undone. This item will be permanently removed from the board.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setDeleteConfirmCardId(null)}
+                className="px-4 py-2 text-sm font-medium text-[oklch(48%_0.01_95)] bg-[oklch(96%_0.01_95)] hover:bg-[oklch(90%_0.01_95)] hover:text-[oklch(28%_0.01_95)] rounded-lg transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  onDeleteCard(deleteConfirmCardId);
+                  setDeleteConfirmCardId(null);
+                }}
+                className="px-4 py-2 text-sm font-medium text-white bg-rose-600 hover:bg-rose-700 rounded-lg transition-colors shadow-sm cursor-pointer"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

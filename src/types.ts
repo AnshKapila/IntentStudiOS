@@ -37,7 +37,8 @@ export interface BaseCard {
 
 export interface LeadCard extends BaseCard {
   contact: string;
-  dealValue: number;
+  dealValue: number | 'Not yet decided';
+  leadType?: 'Inbound' | 'Outbound';
   nextFollowUpDate: string; // YYYY-MM-DD
   rescheduleCount: number; // 0, 1, 2, 3, 4+
 }

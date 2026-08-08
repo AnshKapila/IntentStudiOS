@@ -201,13 +201,29 @@ export const InlineCardDetail: React.FC<InlineCardDetailProps> = ({
                   <option value="EUR">EUR</option>
                   <option value="GBP">GBP</option>
                 </select>
-                <input
-                  type="number"
-                  value={lead.dealValue || ''}
-                  onChange={(e) => handleFieldChange('dealValue', Number(e.target.value))}
-                  className="flex-1 text-[14px] font-mono font-medium text-[oklch(28%_0.01_95)] bg-white rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-[oklch(28%_0.01_95)] elevation-base"
-                  placeholder="0"
-                />
+                <select
+                  value={lead.dealValue === 'Not yet decided' ? 'Not yet decided' : 'custom'}
+                  onChange={(e) => {
+                    if (e.target.value === 'Not yet decided') {
+                      handleFieldChange('dealValue', 'Not yet decided');
+                    } else {
+                      handleFieldChange('dealValue', 0);
+                    }
+                  }}
+                  className="text-[13px] font-medium text-[oklch(28%_0.01_95)] bg-[oklch(96%_0.01_95)] rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-[oklch(28%_0.01_95)]"
+                >
+                  <option value="custom">Value</option>
+                  <option value="Not yet decided">Not yet decided</option>
+                </select>
+                {lead.dealValue !== 'Not yet decided' && (
+                  <input
+                    type="number"
+                    value={lead.dealValue || ''}
+                    onChange={(e) => handleFieldChange('dealValue', Number(e.target.value))}
+                    className="flex-1 text-[14px] font-mono font-medium text-[oklch(28%_0.01_95)] bg-white rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-[oklch(28%_0.01_95)] elevation-base"
+                    placeholder="0"
+                  />
+                )}
               </div>
             </div>
 
@@ -270,6 +286,22 @@ export const InlineCardDetail: React.FC<InlineCardDetailProps> = ({
                 className="w-full text-[14px] font-medium text-[oklch(28%_0.01_95)] bg-white rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-[oklch(28%_0.01_95)] elevation-base"
                 placeholder="e.g. alex@client.com"
               />
+            </div>
+
+            {/* Lead Type */}
+            <div>
+              <label className="chip-stage text-[oklch(48%_0.01_95)] block mb-1">
+                Lead Type
+              </label>
+              <select
+                value={lead.leadType || ''}
+                onChange={(e) => handleFieldChange('leadType', e.target.value)}
+                className="w-full text-[14px] font-medium text-[oklch(28%_0.01_95)] bg-white rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-[oklch(28%_0.01_95)] elevation-base"
+              >
+                <option value="" disabled>Select Type</option>
+                <option value="Inbound">Inbound</option>
+                <option value="Outbound">Outbound</option>
+              </select>
             </div>
           </div>
         )}
