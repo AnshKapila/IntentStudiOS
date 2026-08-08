@@ -8,6 +8,7 @@ import { Sidebar } from './components/Sidebar';
 import { Board } from './components/Board';
 import { LandingPage } from './components/LandingPage';
 import { ProfilePage } from './components/ProfilePage';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { AnimatePresence, motion } from 'framer-motion';
 
 const LOCAL_STORAGE_LEADS_KEY = 'intent_studios_leads_v1';
@@ -224,6 +225,7 @@ export default function App() {
           isSidebarExpanded ? 'md:ml-[240px]' : 'md:ml-[64px]'
         }`}
       >
+        <ErrorBoundary>
           <Header
             activeBoard={activeBoard}
             leadsCount={leads.length}
@@ -274,6 +276,7 @@ export default function App() {
             </motion.div>
           </AnimatePresence>
         </main>
+        </ErrorBoundary>
       </div>
 
       {/* Mobile Bottom Navigation */}
