@@ -1,0 +1,6 @@
+{
+  "name": "Intent Studios OS",
+  "description": "Calm, ultra-fast lead and project status manager with custom stage boards, inline editing, and urgency detection.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
