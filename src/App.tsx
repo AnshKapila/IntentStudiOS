@@ -27,7 +27,10 @@ export default function App() {
   const [leads, setLeads] = useState<LeadCard[]>(() => {
     const saved = localStorage.getItem(LOCAL_STORAGE_LEADS_KEY);
     if (saved) {
-      try { return JSON.parse(saved); } catch (e) { console.error(e); }
+      try { 
+        const parsed = JSON.parse(saved); 
+        if (Array.isArray(parsed)) return parsed;
+      } catch (e) { console.error(e); }
     }
     return INITIAL_LEADS;
   });
@@ -35,7 +38,10 @@ export default function App() {
   const [projects, setProjects] = useState<ProjectCard[]>(() => {
     const saved = localStorage.getItem(LOCAL_STORAGE_PROJECTS_KEY);
     if (saved) {
-      try { return JSON.parse(saved); } catch (e) { console.error(e); }
+      try { 
+        const parsed = JSON.parse(saved); 
+        if (Array.isArray(parsed)) return parsed;
+      } catch (e) { console.error(e); }
     }
     return INITIAL_PROJECTS;
   });
@@ -43,7 +49,10 @@ export default function App() {
   const [hiring, setHiring] = useState<HiringCard[]>(() => {
     const saved = localStorage.getItem(LOCAL_STORAGE_HIRING_KEY);
     if (saved) {
-      try { return JSON.parse(saved); } catch (e) { console.error(e); }
+      try { 
+        const parsed = JSON.parse(saved); 
+        if (Array.isArray(parsed)) return parsed;
+      } catch (e) { console.error(e); }
     }
     return INITIAL_HIRING;
   });
@@ -51,7 +60,10 @@ export default function App() {
   const [earnings, setEarnings] = useState<EarningsCard[]>(() => {
     const saved = localStorage.getItem(LOCAL_STORAGE_EARNINGS_KEY);
     if (saved) {
-      try { return JSON.parse(saved); } catch (e) { console.error(e); }
+      try { 
+        const parsed = JSON.parse(saved); 
+        if (Array.isArray(parsed)) return parsed;
+      } catch (e) { console.error(e); }
     }
     return INITIAL_EARNINGS;
   });
