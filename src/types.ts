@@ -1,4 +1,4 @@
-export type BoardType = 'leads' | 'projects' | 'hiring' | 'earnings';
+export type BoardType = 'leads' | 'projects' | 'hiring' | 'earnings' | 'profile';
 
 export type ServiceType = 'web' | 'video' | 'branding+UIUX' | 'app';
 

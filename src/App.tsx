@@ -6,6 +6,8 @@ import { calculateUrgency, getTodayDateString } from './utils';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { Board } from './components/Board';
+import { LandingPage } from './components/LandingPage';
+import { ProfilePage } from './components/ProfilePage';
 import { AnimatePresence, motion } from 'framer-motion';
 
 const LOCAL_STORAGE_LEADS_KEY = 'intent_studios_leads_v1';
@@ -14,6 +16,7 @@ const LOCAL_STORAGE_HIRING_KEY = 'intent_studios_hiring_v1';
 const LOCAL_STORAGE_EARNINGS_KEY = 'intent_studios_earnings_v1';
 
 export default function App() {
+  const [currentRoute, setCurrentRoute] = useState<'landing' | 'dashboard'>('landing');
   const [activeBoard, setActiveBoard] = useState<BoardType>('leads');
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   const [boardViews, setBoardViews] = useState<Record<string, 'kanban' | 'table'>>({
@@ -93,8 +96,8 @@ export default function App() {
   }, [earnings]);
 
   // Current active dataset
-  const currentCards: BoardCard[] = activeBoard === 'leads' ? leads : activeBoard === 'projects' ? projects : activeBoard === 'hiring' ? hiring : earnings;
-  const currentStages = activeBoard === 'leads' ? LEAD_STAGES : activeBoard === 'projects' ? PROJECT_STAGES : activeBoard === 'hiring' ? HIRING_STAGES : EARNINGS_STAGES;
+  const currentCards: BoardCard[] = activeBoard === 'leads' ? leads : activeBoard === 'projects' ? projects : activeBoard === 'hiring' ? hiring : activeBoard === 'earnings' ? earnings : [];
+  const currentStages = activeBoard === 'leads' ? LEAD_STAGES : activeBoard === 'projects' ? PROJECT_STAGES : activeBoard === 'hiring' ? HIRING_STAGES : activeBoard === 'earnings' ? EARNINGS_STAGES : [];
 
   // Calculate urgent items count across all boards for header badge (if applicable, currently Leads/Projects)
   const urgentCount = currentCards.filter(c => {
@@ -193,12 +196,18 @@ export default function App() {
   };
 
   const handleQuickAddTrigger = () => {
-    const firstStageId = currentStages[0].id;
+    if (activeBoard === 'profile') return;
+    const firstStageId = currentStages[0]?.id;
+    if (!firstStageId) return;
     handleAddCard({
       clientName: 'New Client',
       stageId: firstStageId,
     } as any);
   };
+
+  if (currentRoute === 'landing') {
+    return <LandingPage onGetStarted={() => setCurrentRoute('dashboard')} />;
+  }
 
   return (
     <div className="min-h-screen bg-[oklch(98%_0.005_95)] text-[oklch(28%_0.01_95)] flex font-sans antialiased selection:bg-[oklch(28%_0.01_95)] selection:text-white">
@@ -226,12 +235,14 @@ export default function App() {
             onResetData={handleResetData}
             onExportData={handleExportData}
             onImportData={handleImportData}
-            view={boardViews[activeBoard]}
+            view={boardViews[activeBoard] || 'kanban'}
             onToggleView={() => {
-              setBoardViews(prev => ({
-                ...prev,
-                [activeBoard]: prev[activeBoard] === 'table' ? 'kanban' : 'table'
-              }));
+              if (activeBoard !== 'profile') {
+                setBoardViews(prev => ({
+                  ...prev,
+                  [activeBoard]: prev[activeBoard] === 'table' ? 'kanban' : 'table'
+                }));
+              }
             }}
           />
 
@@ -245,18 +256,21 @@ export default function App() {
               transition={{ duration: 0.15, ease: 'easeOut' }}
               className="absolute inset-0 flex flex-col"
             >
-              <Board
-                boardType={activeBoard}
-                stages={currentStages}
-                cards={currentCards}
-                filter={filter}
-                view={boardViews[activeBoard]}
-                projects={projects}
-                onUpdateCard={handleUpdateCard}
-                onDeleteCard={handleDeleteCard}
-                onAddCard={handleAddCard}
-                onClearFilters={() => setFilter({ searchQuery: '', urgencyOnly: false, sortBy: 'date' })}
-              />
+              {activeBoard === 'profile' ? (
+                <ProfilePage />
+              ) : (
+                <Board
+                  boardType={activeBoard as 'leads' | 'projects' | 'hiring' | 'earnings'}
+                  stages={currentStages}
+                  cards={currentCards}
+                  filter={filter}
+                  view={boardViews[activeBoard]}
+                  onUpdateCard={handleUpdateCard}
+                  onDeleteCard={handleDeleteCard}
+                  onAddCard={handleAddCard}
+                  onClearFilters={() => setFilter({ searchQuery: '', urgencyOnly: false, sortBy: 'date' })}
+                />
+              )}
             </motion.div>
           </AnimatePresence>
         </main>

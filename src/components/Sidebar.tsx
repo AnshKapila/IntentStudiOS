@@ -51,8 +51,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
           onClick={() => onBoardChange('leads')}
           className={`w-full flex items-center h-10 px-2 rounded-lg transition-colors cursor-pointer whitespace-nowrap ${
             activeBoard === 'leads'
-              ? 'bg-white elevation-base text-[oklch(28%_0.01_95)]'
-              : 'text-[oklch(48%_0.01_95)] hover:text-[oklch(28%_0.01_95)] hover:bg-[oklch(97%_0.005_95)]'
+              ? 'bg-[var(--brand-primary)] elevation-base text-[var(--bg-cream)]'
+              : 'text-[oklch(48%_0.01_95)] hover:text-[var(--brand-primary)] hover:bg-[oklch(97%_0.005_95)]'
           }`}
         >
           <div className="w-6 h-6 flex items-center justify-center shrink-0">
@@ -71,8 +71,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
           onClick={() => onBoardChange('projects')}
           className={`w-full flex items-center h-10 px-2 rounded-lg transition-colors cursor-pointer whitespace-nowrap ${
             activeBoard === 'projects'
-              ? 'bg-white elevation-base text-[oklch(28%_0.01_95)]'
-              : 'text-[oklch(48%_0.01_95)] hover:text-[oklch(28%_0.01_95)] hover:bg-[oklch(97%_0.005_95)]'
+              ? 'bg-[var(--brand-primary)] elevation-base text-[var(--bg-cream)]'
+              : 'text-[oklch(48%_0.01_95)] hover:text-[var(--brand-primary)] hover:bg-[oklch(97%_0.005_95)]'
           }`}
         >
           <div className="w-6 h-6 flex items-center justify-center shrink-0">
@@ -91,8 +91,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
           onClick={() => onBoardChange('hiring')}
           className={`w-full flex items-center h-10 px-2 rounded-lg transition-colors cursor-pointer whitespace-nowrap ${
             activeBoard === 'hiring'
-              ? 'bg-white elevation-base text-[oklch(28%_0.01_95)]'
-              : 'text-[oklch(48%_0.01_95)] hover:text-[oklch(28%_0.01_95)] hover:bg-[oklch(97%_0.005_95)]'
+              ? 'bg-[var(--brand-primary)] elevation-base text-[var(--bg-cream)]'
+              : 'text-[oklch(48%_0.01_95)] hover:text-[var(--brand-primary)] hover:bg-[oklch(97%_0.005_95)]'
           }`}
         >
           <div className="w-6 h-6 flex items-center justify-center shrink-0">
@@ -111,8 +111,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
           onClick={() => onBoardChange('earnings')}
           className={`w-full flex items-center h-10 px-2 rounded-lg transition-colors cursor-pointer whitespace-nowrap ${
             activeBoard === 'earnings'
-              ? 'bg-white elevation-base text-[oklch(28%_0.01_95)]'
-              : 'text-[oklch(48%_0.01_95)] hover:text-[oklch(28%_0.01_95)] hover:bg-[oklch(97%_0.005_95)]'
+              ? 'bg-[var(--brand-primary)] elevation-base text-[var(--bg-cream)]'
+              : 'text-[oklch(48%_0.01_95)] hover:text-[var(--brand-primary)] hover:bg-[oklch(97%_0.005_95)]'
           }`}
         >
           <div className="w-6 h-6 flex items-center justify-center shrink-0">
@@ -129,9 +129,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </nav>
 
       <div className="p-3 shrink-0">
-        <button className="w-full flex items-center h-10 px-2 rounded-lg text-[oklch(48%_0.01_95)] hover:text-[oklch(28%_0.01_95)] hover:bg-[oklch(97%_0.005_95)] transition-colors cursor-pointer whitespace-nowrap">
+        <button 
+          onClick={() => onBoardChange('profile')}
+          className={`w-full flex items-center h-10 px-2 rounded-lg transition-colors cursor-pointer whitespace-nowrap ${
+            activeBoard === 'profile'
+              ? 'bg-[var(--brand-primary)] elevation-base text-[var(--bg-cream)]'
+              : 'text-[oklch(48%_0.01_95)] hover:text-[var(--brand-primary)] hover:bg-[oklch(97%_0.005_95)]'
+          }`}
+        >
           <div className="w-6 h-6 flex items-center justify-center shrink-0">
-            <div className="w-[20px] h-[20px] rounded-full bg-[oklch(85%_0.01_95)] flex items-center justify-center text-[10px] font-bold text-[oklch(28%_0.01_95)]">
+            <div className={`w-[20px] h-[20px] rounded-full flex items-center justify-center text-[10px] font-bold ${
+              activeBoard === 'profile'
+                ? 'bg-[var(--bg-cream)] text-[var(--brand-primary)]'
+                : 'bg-[var(--accent-orange)] text-white'
+            }`}>
               AK
             </div>
           </div>
